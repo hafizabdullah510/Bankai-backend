@@ -18,6 +18,7 @@ import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
 import { authenticationMiddleware } from "./middlewares/authMiddleware.js";
 
 app.use(express.json());
+
 app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -43,5 +44,3 @@ try {
   console.log(error);
   process.exit(1);
 }
-
-export default app;
