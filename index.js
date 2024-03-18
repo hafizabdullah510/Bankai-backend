@@ -23,7 +23,7 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use("/", (req, res) => res.json({ msg: "api running" }));
+
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/card", authenticationMiddleware, CardRouter);
