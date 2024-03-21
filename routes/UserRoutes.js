@@ -10,6 +10,7 @@ import {
   deleteUser,
   getCurrentUser,
   updatePassword,
+  makePayment,
 } from "../controllers/userController.js";
 const router = express.Router();
 router.get("/all-users", authorizePermission(["admin"]), getAllUsers);
@@ -19,6 +20,7 @@ router.get(
   validateUserIdParam,
   getSingleUser
 );
+
 // router.patch(
 //   "/:id",
 //   authorizePermission(["admin"]),
@@ -38,5 +40,6 @@ router.patch(
   validateUpdatePasswordInput,
   updatePassword
 );
+router.post("/make_payment", makePayment);
 
 export default router;

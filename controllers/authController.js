@@ -2,7 +2,11 @@ import User from "../models/UserModel.js";
 import { StatusCodes } from "http-status-codes";
 import { createJWT, addCookiesToResponse } from "../utils/tokenUtils.js";
 import crypto from "crypto";
-import { comparePassword, hashPassword } from "../utils/passwordUtils.js";
+import {
+  comparePassword,
+  hashPassword,
+  hashPasswordToken,
+} from "../utils/passwordUtils.js";
 import { sendResetPasswordEmail } from "../utils/sendResetPasswordEmail.js";
 import {
   UNAUTHENTICATED_ERROR,
@@ -80,6 +84,7 @@ export const forgot_password = async (req, res) => {
     .json({ msg: "please check your email to reset password" });
 };
 export const resetPassword = async (req, res) => {
+  const { email, token, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
     const currentDate = new Date(Date.now());

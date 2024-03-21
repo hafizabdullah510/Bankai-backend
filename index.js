@@ -5,8 +5,11 @@ import express from "express";
 import morgan from "morgan";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-
 const app = express();
+
+app.get("/", function (req, res) {
+  res.json({ key: process.env.PUBLIC_KEY });
+});
 
 //Routes
 import AuthRouter from "./routes/AuthRoutes.js";
