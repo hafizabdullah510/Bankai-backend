@@ -13,7 +13,8 @@ export const getContract = async () => {
     "utf-8"
   );
   const abi = await fs.readFile(
-    "contracts/CardDetailsContract_sol_CardDetailsContract.abi",
+    process.cwd() +
+      "/contracts/CardDetailsContract_sol_CardDetailsContract.abi",
     "utf-8"
   );
   const cardDetailsContract = new ethers.Contract(contractAddress, abi, wallet);
