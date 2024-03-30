@@ -12,11 +12,6 @@ import { getContract } from "../utils/contracts.js";
 import { v4 as uuidv4 } from "uuid";
 import { ethers } from "ethers";
 
-const abiPath =
-  "/Users/abdullahtariq/Desktop/Bankai/bankai-app/contracts/CardDetailsContract_sol_CardDetailsContract.abi";
-const addressPath =
-  "/Users/abdullahtariq/Desktop/Bankai/bankai-app/CardDetailsContractAddress.txt";
-
 export const addCard = async (req, res) => {
   const {
     cardHolderName,
@@ -39,7 +34,7 @@ export const addCard = async (req, res) => {
     throw new UNAUTHORIZED_ERROR("Please perform KYC to add card.");
   }
 
-  const cardContact = await getContract(abiPath, addressPath);
+  const cardContact = await getContract();
 
   const isCardFound = await BankCard.findOne({
     cardHolderCnic,
@@ -101,7 +96,7 @@ export const addCard = async (req, res) => {
 };
 export const deleteCard = async (req, res) => {
   const { id } = req.params;
-  const cardContact = await getContract(abiPath, addressPath);
+  const cardContact = await getContract();
   const deleted = await cardContact.deleteCard(id);
   await deleted.wait();
   const user = await User.findOne({ _id: req.user.userId });
@@ -138,7 +133,7 @@ export const changePriority = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Priority Updated" });
 };
 export const getAllCards = async (req, res) => {
-  const cardContact = await getContract(abiPath, addressPath);
+  const cardContact = await getContract();
 
   const user = await User.findOne({ _id: req.user.userId });
   const cardIDs = user.cards.map((card) => card.cardID);
