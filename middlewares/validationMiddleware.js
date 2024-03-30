@@ -7,6 +7,14 @@ import {
 import mongoose from "mongoose";
 import User from "../models/UserModel.js";
 import Card from "../models/CardModel.js";
+import VirtualCard from "../models/VirtualCard.js";
+import { getContract } from "../utils/contracts.js";
+import { ethers } from "ethers";
+
+const abiPath =
+  "/Users/abdullahtariq/Desktop/Bankai/bankai-app/contracts/CardDetailsContract_sol_CardDetailsContract.abi";
+const addressPath =
+  "/Users/abdullahtariq/Desktop/Bankai/bankai-app/CardDetailsContractAddress.txt";
 
 const validateErrors = (validationValues) => {
   return [
@@ -121,9 +129,18 @@ export const validateAddCardInput = validateErrors([
     .withMessage("card number is required")
     .isLength({ min: 16, max: 16 })
     .withMessage("The length must be 16 digits")
-    .custom(async (cardNumber) => {
-      const user = await Card.findOne({ cardNumber });
-      if (user) {
+    .custom(async (cardNumber, { req }) => {
+      const cardContact = await getContract(abiPath, addressPath);
+      const user = await User.findOne({ _id: req.user.userId });
+      const cardIDs = user.cards.map((card) => card.cardID);
+      const cardIDsBytes32 = cardIDs.map((cardID) =>
+        ethers.encodeBytes32String(cardID)
+      );
+      const cardDetails = await cardContact.getAllCardDetails(cardIDsBytes32);
+      //from blockchain
+      const cards = cardDetails.map((card) => parseInt(card[3]));
+      const CardAlreadyAdded = cards.find((cardNum) => cardNum === cardNumber);
+      if (CardAlreadyAdded) {
         throw new BAD_REQUEST_ERROR("Card already Added");
       }
     }),
@@ -152,10 +169,34 @@ export const validateCardIdParam = validateErrors([
   }),
 ]);
 
-export const validateCardPriority = validateErrors([
-  body("priorityNumber")
+// export const validateCardPriority = validateErrors([
+//   body("priorityNumber")
+//     .notEmpty()
+//     .withMessage("Priority Number is required")
+//     .isNumeric()
+//     .withMessage("Priority Number must be an integer value"),
+// ]);
+export const validateTransactionInput = validateErrors([
+  body("amount")
     .notEmpty()
-    .withMessage("Priority Number is required")
+    .withMessage("amount is required")
     .isNumeric()
-    .withMessage("Priority Number must be an integer value"),
+    .withMessage("amount must be an integer value"),
+  body("merchant").notEmpty().withMessage("merchant name is required"),
+  body("cardNumber")
+    .notEmpty()
+    .withMessage("Card number is required")
+    .isNumeric()
+    .withMessage("card number must be in digits")
+    .custom(async (cardNumber) => {
+      const card = await VirtualCard.findOne({ cardNumber });
+      if (!card) {
+        throw new UNAUTHORIZED_ERROR("Not Authorized to perform transaction");
+      }
+    }),
+  body("cvv")
+    .notEmpty()
+    .withMessage("cvv is required")
+    .isNumeric()
+    .withMessage("cvv must be an integer value"),
 ]);

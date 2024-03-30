@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/abdullahtariq/Desktop/Bankai/bankai-app/contracts/CardDetailsContract.sol": {
+      "lastModificationDate": 1711611730522,
+      "contentHash": "f2985b005d0a34526c9ee3f3e56b6671",
+      "sourceName": "contracts/CardDetailsContract.sol",
+      "solcConfig": {
+        "version": "0.8.7",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.7"
+      ],
+      "artifacts": [
+        "CardDetailsContract"
+      ]
+    }
+  }
+}

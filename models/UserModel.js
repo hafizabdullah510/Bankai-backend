@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
     enum: ["admin", "user"],
     default: "user",
   },
+  cards: [],
   isKycVerified: {
     type: Boolean,
     default: true,

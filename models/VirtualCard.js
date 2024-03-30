@@ -6,7 +6,8 @@ const virtualCardSchema = new mongoose.Schema({
   issueDate: Date,
   expiryDate: Date,
   cardHolderCnic: String,
-
+  max_credit_limit: Number,
+  available_limit: Number,
   ownedBy: {
     type: mongoose.Types.ObjectId,
     ref: "User",

@@ -7,14 +7,11 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 const app = express();
 
-app.get("/", function (req, res) {
-  res.json({ key: process.env.PUBLIC_KEY });
-});
-
 //Routes
 import AuthRouter from "./routes/AuthRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
 import CardRouter from "./routes/CardRoutes.js";
+import TransactionRouter from "./routes/TransactionRoutes.js";
 
 //Middlewares
 import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
@@ -30,6 +27,7 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/card", authenticationMiddleware, CardRouter);
+app.use("/api/v1/transaction", TransactionRouter);
 
 app.use("*", (req, res) => {
   res.status(404).json({ msg: "Routes does not exists" });

@@ -9,12 +9,11 @@ import {
 import {
   validateAddCardInput,
   validateCardIdParam,
-  validateCardPriority,
 } from "../middlewares/validationMiddleware.js";
 import { authorizePermission } from "../middlewares/authMiddleware.js";
 
 router.get("/", getAllCards);
 router.post("/", validateAddCardInput, addCard);
-router.delete("/:id", validateCardIdParam, deleteCard);
-router.patch("/:id", validateCardPriority, changePriority);
+router.delete("/:id", deleteCard);
+router.post("/changePriority", changePriority);
 export default router;
