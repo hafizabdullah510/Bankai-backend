@@ -45,7 +45,9 @@ app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/card", authenticationMiddleware, CardRouter);
 app.use("/api/v1/transaction", TransactionRouter);
+//cron jobs
 app.use("/renew_limit", renewLimit);
+app.use("/pay_loan", payLoan);
 
 app.use("*", (req, res) => {
   res.status(404).json({ msg: "Routes does not exists" });
