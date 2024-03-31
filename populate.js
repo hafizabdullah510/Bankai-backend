@@ -6,7 +6,7 @@ try {
   await mongoose.connect(process.env.MONGO_URL);
   await Card.create(
     {
-      cardHolderName: "Abdullah Tariq",
+      cardHolderName: "Umar Tariq",
       cardNumber: "2222 3333 4444 7777",
       cvv: 798,
       issueDate: new Date(Date.now()),

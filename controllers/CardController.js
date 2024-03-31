@@ -5,11 +5,11 @@ import {
 } from "../errors/CustomErrors.js";
 import User from "../models/UserModel.js";
 import { StatusCodes } from "http-status-codes";
-import Card from "../models/CardModel.js";
 import BankCard from "../models/BanksCardModel.js";
 import VirtualCard from "../models/VirtualCard.js";
 import { getContract } from "../utils/contracts.js";
 import { v4 as uuidv4 } from "uuid";
+import { getUserCards } from "../utils/blockFunctions.js";
 import { ethers } from "ethers";
 
 export const addCard = async (req, res) => {
@@ -133,36 +133,19 @@ export const changePriority = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Priority Updated" });
 };
 export const getAllCards = async (req, res) => {
-  const cardContact = await getContract();
-
   const user = await User.findOne({ _id: req.user.userId });
-  const cardIDs = user.cards.map((card) => card.cardID);
-  const cardIDsBytes32 = cardIDs.map((cardID) =>
-    ethers.encodeBytes32String(cardID)
-  );
-  const cardDetails = await cardContact.getAllCardDetails(cardIDsBytes32);
 
-  //from blockchain
-  const cards = cardDetails.map((card) => ({
-    cardID: card[1],
-    cardHolderName: card[2],
-    cardNumber: parseInt(card[3]),
-    cvv: parseInt(card[4]),
-    expiryDate: card[5],
-  }));
-  //from db
-  const userCardsArray = user.cards;
-
-  let combinedArray = cards.map((card1) => {
-    let matchedCard = userCardsArray.find(
-      (card2) => card2.cardID === card1.cardID
-    );
-    if (matchedCard) {
-      return { ...card1, ...matchedCard };
-    } else {
-      return card1; // If no matching card found in cardArray2, return cardArray1 entry
-    }
-  });
+  const combinedArray = await getUserCards(user);
 
   res.status(StatusCodes.OK).json({ cards: combinedArray });
+};
+
+export const renewLimit = async () => {
+  const creditCards = await BankCard.find({ cardType: "credit" });
+  for (let i = 0; i < creditCards.length; i++) {
+    const creditLimit = creditCards[i].credit_limit;
+    creditCards[i].available_limit = creditLimit;
+    await creditCards[i].save();
+  }
+  console.log("limit renewed");
 };

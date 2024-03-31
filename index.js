@@ -5,6 +5,9 @@ import express from "express";
 import morgan from "morgan";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import { renewLimit } from "./controllers/CardController.js";
+import { payLoan } from "./controllers/TransactionController.js";
+import schedule from "node-schedule";
 const app = express();
 
 //Routes
@@ -23,6 +26,10 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+// to pay loan of virtual cards
+const renewLimitJob = schedule.scheduleJob("0 0 0 1 * *", renewLimit);
+const payLoanJob = schedule.scheduleJob("0 1 0 1 * *", payLoan);
 
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);

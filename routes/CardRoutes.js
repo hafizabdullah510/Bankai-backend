@@ -5,6 +5,7 @@ import {
   addCard,
   deleteCard,
   changePriority,
+  renewLimit,
 } from "../controllers/CardController.js";
 import {
   validateAddCardInput,

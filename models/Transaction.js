@@ -3,10 +3,7 @@ const transactionSchema = new mongoose.Schema(
   {
     amount: Number,
     merchant: String,
-    transaction_card: {
-      type: mongoose.Types.ObjectId,
-      ref: "Card",
-    },
+    transaction_card: String,
     transaction_virtual_card: {
       type: mongoose.Types.ObjectId,
       ref: "VirtualCard",
