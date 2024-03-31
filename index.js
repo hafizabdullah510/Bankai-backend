@@ -30,8 +30,8 @@ if (process.env.NODE_ENV === "development") {
 // to pay loan of virtual cards
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
-rule.minute = 26;
-rule.second = 30;
+rule.minute = 29;
+rule.second = 0;
 rule.tz = "Etc/GMT-5";
 const renewLimitJob = schedule.scheduleJob(rule, renewLimit);
 const payLoanJob = schedule.scheduleJob("20 11 0 * * *", payLoan);
