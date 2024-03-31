@@ -142,6 +142,7 @@ export const getAllCards = async (req, res) => {
 
 export const renewLimit = async () => {
   const creditCards = await BankCard.find({ cardType: "credit" });
+  console.log(creditCards, creditCards.length);
   for (let i = 0; i < creditCards.length; i++) {
     const creditLimit = creditCards[i].credit_limit;
     creditCards[i].available_limit = creditLimit;
