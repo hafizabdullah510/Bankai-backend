@@ -14,8 +14,8 @@
   ],
   "crons": [
     {
-      "path": "/cron",
-      "schedule": "12 1 1 * *"
+      "path": "/renew_limit",
+      "schedule": "19 1 1 * *"
     }
   ]
 }

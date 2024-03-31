@@ -45,9 +45,7 @@ app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/card", authenticationMiddleware, CardRouter);
 app.use("/api/v1/transaction", TransactionRouter);
-app.use("/cron", async (req, res) => {
-  res.send("hello");
-});
+app.use("/renew_limit", renewLimit);
 
 app.use("*", (req, res) => {
   res.status(404).json({ msg: "Routes does not exists" });

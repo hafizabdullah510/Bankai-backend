@@ -14,7 +14,6 @@ import {
 import { authorizePermission } from "../middlewares/authMiddleware.js";
 
 router.get("/", getAllCards);
-router.get("/renew_limit", renewLimit);
 router.post("/", validateAddCardInput, addCard);
 router.delete("/:id", deleteCard);
 router.post("/changePriority", changePriority);
