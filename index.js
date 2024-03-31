@@ -28,8 +28,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // to pay loan of virtual cards
-const renewLimitJob = schedule.scheduleJob("0 0 0 1 * *", renewLimit);
-const payLoanJob = schedule.scheduleJob("0 1 0 1 * *", payLoan);
+const renewLimitJob = schedule.scheduleJob("0 7 0 * * *", renewLimit);
+const payLoanJob = schedule.scheduleJob("20 7 0 * * *", payLoan);
 
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
