@@ -28,13 +28,18 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // to pay loan of virtual cards
-const rule = new schedule.RecurrenceRule();
+const renewRule = new schedule.RecurrenceRule();
 rule.hour = 0;
-rule.minute = 29;
+rule.minute = 34;
 rule.second = 0;
 rule.tz = "Etc/GMT-5";
-const renewLimitJob = schedule.scheduleJob(rule, renewLimit);
-const payLoanJob = schedule.scheduleJob("20 11 0 * * *", payLoan);
+const renewLimitJob = schedule.scheduleJob(renewRule, renewLimit);
+const payLoanRule = new schedule.RecurrenceRule();
+rule.hour = 0;
+rule.minute = 35;
+rule.second = 0;
+rule.tz = "Etc/GMT-5";
+const payLoanJob = schedule.scheduleJob(payLoanRule, payLoan);
 
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
