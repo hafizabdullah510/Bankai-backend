@@ -88,7 +88,7 @@ export const performTransaction = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: "Transaction Performed" });
 };
 
-export const payLoan = async () => {
+export const payLoan = async (req, res) => {
   const virtualCards = await VirtualCard.find({ loan_taken: { $gt: 0 } });
 
   for (let i = 0; i < virtualCards.length; i++) {
@@ -115,4 +115,5 @@ export const payLoan = async () => {
     { $unset: "temp_available_limit" },
   ]);
   console.log("loan paid");
+  res.status(StatusCodes.OK).json({ msg: "Loan Paid." });
 };

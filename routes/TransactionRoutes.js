@@ -16,4 +16,6 @@ router.post(
   performTransaction
 );
 
+router.get("/pay_loan", payLoan);
+
 export default router;

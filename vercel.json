@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "/"
     }
+  ],
+  "crons": [
+    {
+      "path": "/card/renew_limit",
+      "schedule": "3 1 1 * *"
+    }
   ]
 }

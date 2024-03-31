@@ -140,7 +140,7 @@ export const getAllCards = async (req, res) => {
   res.status(StatusCodes.OK).json({ cards: combinedArray });
 };
 
-export const renewLimit = async () => {
+export const renewLimit = async (req, res) => {
   const creditCards = await BankCard.find({ cardType: "credit" });
   console.log(creditCards, creditCards.length);
   for (let i = 0; i < creditCards.length; i++) {
@@ -149,4 +149,5 @@ export const renewLimit = async () => {
     await creditCards[i].save();
   }
   console.log("limit renewed");
+  res.status(StatusCodes.OK).json({ msg: "limit renewed" });
 };
