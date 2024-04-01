@@ -65,8 +65,10 @@ export const validateRegisterInput = validateErrors([
   body("password")
     .notEmpty()
     .withMessage("password is required")
-    .isAlphanumeric("en-US")
-    .withMessage("password should be alphanumeric")
+    .matches(/^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[\W_]).{8,}$/) // Alphanumeric with special characters
+    .withMessage(
+      "Password must contain at least one letter, one number, and one special character"
+    )
     .isLength({ min: 8 })
     .withMessage("password must be at least 8 characters long"),
 ]);
