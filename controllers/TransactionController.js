@@ -27,7 +27,8 @@ export const performTransaction = async (req, res) => {
       cardNumber: card.cardNumber,
     });
     if (
-      userBankCard.cardType === "credit" &&
+      !card.isCardFreeze &&
+      card.cardType === "credit" &&
       amount <= userBankCard.available_limit
     ) {
       console.log("it credit");
@@ -44,7 +45,8 @@ export const performTransaction = async (req, res) => {
     }
     if (!transactionCompleted) {
       if (
-        userBankCard.cardType === "debit" &&
+        !card.isCardFreeze &&
+        card.cardType === "debit" &&
         amount <= userBankCard.availableBalance
       ) {
         console.log("debit");

@@ -151,3 +151,24 @@ export const renewLimit = async (req, res) => {
   console.log("limit renewed");
   res.status(StatusCodes.OK).json({ msg: "limit renewed" });
 };
+
+export const freezeCard = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
+  const userVirtualVCard = await VirtualCard.findOne({
+    ownedBy: req.user.userId,
+  });
+  const cardIndex = user.cards.findIndex((card) => card.cardID === id);
+
+  if (
+    userVirtualVCard.loan_taken > 0 &&
+    user.cards[cardIndex].cardType === "credit"
+  ) {
+    throw new UNAUTHORIZED_ERROR("Card Cannot be freezed");
+  }
+  user.cards[cardIndex].isCardFreeze = true;
+  user.markModified("cards");
+  await user.save();
+
+  res.status(StatusCodes.OK).json({ msg: "Card Freezed" });
+};
