@@ -97,10 +97,15 @@ export const addCard = async (req, res) => {
 };
 export const deleteCard = async (req, res) => {
   const { id } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
+  const virtualCard = await VirtualCard.findOne({ ownedBy: req.user.userId });
+  const cardBeingDeleted = user.cards.find((card) => card.cardID === id);
+  if (virtualCard.loan_taken > 0 && cardBeingDeleted.cardType === "credit") {
+    throw new UNAUTHORIZED_ERROR("Card cannot be deleted.");
+  }
   const cardContract = await getContract();
   const deleted = await cardContract.deleteCard(id);
   await deleted.wait();
-  const user = await User.findOne({ _id: req.user.userId });
 
   const cardIndex = user.cards.findIndex((card) => card.cardID === id);
 
@@ -181,4 +186,14 @@ export const getSingleCard = async (req, res) => {
 
   const card = await retreiveSingleCard(id, user);
   res.status(StatusCodes.OK).json({ card });
+};
+
+export const unfreezeCard = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
+  const cardIndex = user.cards.findIndex((card) => card.cardID === id);
+  user.cards[cardIndex].isCardFreeze = false;
+  user.markModified("cards");
+  await user.save();
+  res.status(StatusCodes.OK).json({ msg: "Card Unfreezed" });
 };

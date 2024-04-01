@@ -7,6 +7,7 @@ import {
   changePriority,
   freezeCard,
   getSingleCard,
+  unfreezeCard,
 } from "../controllers/CardController.js";
 import {
   validateAddCardInput,
@@ -20,4 +21,5 @@ router.delete("/:id", deleteCard);
 router.get("/:id", getSingleCard);
 router.post("/changePriority", changePriority);
 router.get("/freeze_card/:id", freezeCard);
+router.get("/unfreeze_card/:id", unfreezeCard);
 export default router;
