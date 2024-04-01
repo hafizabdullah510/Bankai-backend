@@ -132,7 +132,6 @@ export const payLoan = async (req, res) => {
     if (!loanPaid) {
       user.credit_score = 4;
       await user.save();
-      console.log("Loan payment failed");
     }
   }
 
