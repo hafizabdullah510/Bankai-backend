@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
   cards: [],
+  credit_score: {
+    type: Number,
+    default: 5,
+  },
   isKycVerified: {
     type: Boolean,
     default: true,

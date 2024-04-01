@@ -66,7 +66,7 @@ export const performTransaction = async (req, res) => {
   }
   if (!transactionCompleted) {
     const hasCreditCard = cardsArray.find((card) => card.cardType === "credit");
-    if (user.isPremiumUser && hasCreditCard) {
+    if (user.credit_score === 5 && user.isPremiumUser && hasCreditCard) {
       if (amount <= virtualCard.available_limit) {
         console.log("virtual");
         virtualCard.available_limit -= amount;
@@ -85,6 +85,10 @@ export const performTransaction = async (req, res) => {
           .status(StatusCodes.BAD_REQUEST)
           .json({ msg: "transaction failed" });
       }
+    } else {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "transaction failed due to less credit score." });
     }
   }
   res.status(StatusCodes.OK).json({ msg: "Transaction Performed" });
@@ -92,30 +96,45 @@ export const performTransaction = async (req, res) => {
 
 export const payLoan = async (req, res) => {
   const virtualCards = await VirtualCard.find({ loan_taken: { $gt: 0 } });
-
+  let loanPaid = false;
   for (let i = 0; i < virtualCards.length; i++) {
     const card = virtualCards[i];
     const user = await User.findOne({ _id: card.ownedBy });
     const userCards = await getUserCards(user);
-    const priorityCard = userCards[0];
-    const userCardToPayLoan = await BanksCard.findOne({
-      cardNumber: priorityCard.cardNumber,
-    });
-    userCardToPayLoan.available_limit -= card.loan_taken;
-    await userCardToPayLoan.save();
-    await Transaction.create({
-      amount: card.loan_taken,
-      merchant: "Virtual card payment",
-      transaction_card: priorityCard.cardID,
-      transaction_virtual_card: card._id,
-    });
+    for (let i = 0; i < userCards.length; i++) {
+      const userCardToPayLoan = await BanksCard.findOne({
+        cardNumber: userCards[i].cardNumber,
+        cardType: "credit",
+        available_limit: { $gte: card.loan_taken },
+      });
+      if (userCardToPayLoan) {
+        userCardToPayLoan.available_limit -= card.loan_taken;
+        loanPaid = true;
+        await userCardToPayLoan.save();
+        user.credit_score = 5;
+        await user.save();
+        await Transaction.create({
+          amount: card.loan_taken,
+          merchant: "Virtual card payment",
+          transaction_card: userCards[i].cardID,
+          transaction_virtual_card: card._id,
+        });
+        await VirtualCard.findOneAndUpdate({ ownedBy: user._id }, [
+          { $set: { loan_taken: 0 } },
+          { $set: { temp_available_limit: "$max_credit_limit" } },
+          { $set: { available_limit: "$temp_available_limit" } },
+          { $unset: "temp_available_limit" },
+        ]);
+        console.log("loan paid");
+        break;
+      }
+    }
+    if (!loanPaid) {
+      user.credit_score = 4;
+      await user.save();
+      console.log("Loan payment failed");
+    }
   }
-  await VirtualCard.updateMany({}, [
-    { $set: { loan_taken: 0 } },
-    { $set: { temp_available_limit: "$max_credit_limit" } },
-    { $set: { available_limit: "$temp_available_limit" } },
-    { $unset: "temp_available_limit" },
-  ]);
-  console.log("loan paid");
-  res.status(StatusCodes.OK).json({ msg: "Loan Paid." });
+
+  res.status(StatusCodes.OK).json({ msg: "Done" });
 };
