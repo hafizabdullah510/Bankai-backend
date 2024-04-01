@@ -42,3 +42,33 @@ export const getUserCards = async (user) => {
   });
   return combinedArray;
 };
+
+export const retreiveSingleCard = async (id, user) => {
+  const cardContract = await getContract();
+  const card = await cardContract.retrieveCardDetails(id);
+  const [_, cardID, cardHolderName, cardNumber, cvv, expiryDate] = card;
+  const cardData = {
+    cardID,
+    cardHolderName,
+    cardNumber: parseInt(cardNumber),
+    cvv: parseInt(cvv),
+    expiryDate,
+  };
+
+  const matchedCard = user.cards.find(
+    (card) => card.cardID === cardData.cardID
+  );
+
+  if (matchedCard) {
+    // Combine properties from both objects
+    const combinedCardObject = {
+      ...matchedCard,
+      cardHolderName: cardData.cardHolderName,
+      cardNumber: cardData.cardNumber,
+      cvv: cardData.cvv,
+      expiryDate: cardData.expiryDate,
+    };
+
+    return combinedCardObject;
+  }
+};

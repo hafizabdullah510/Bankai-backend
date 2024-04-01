@@ -125,7 +125,6 @@ export const payLoan = async (req, res) => {
           { $set: { available_limit: "$temp_available_limit" } },
           { $unset: "temp_available_limit" },
         ]);
-        console.log("loan paid");
         break;
       }
     }

@@ -10,6 +10,7 @@ import VirtualCard from "../models/VirtualCard.js";
 import { getContract } from "../utils/contracts.js";
 import { v4 as uuidv4 } from "uuid";
 import { getUserCards } from "../utils/blockFunctions.js";
+import { retreiveSingleCard } from "../utils/blockFunctions.js";
 import { ethers } from "ethers";
 
 export const addCard = async (req, res) => {
@@ -96,8 +97,8 @@ export const addCard = async (req, res) => {
 };
 export const deleteCard = async (req, res) => {
   const { id } = req.params;
-  const cardContact = await getContract();
-  const deleted = await cardContact.deleteCard(id);
+  const cardContract = await getContract();
+  const deleted = await cardContract.deleteCard(id);
   await deleted.wait();
   const user = await User.findOne({ _id: req.user.userId });
 
@@ -105,7 +106,7 @@ export const deleteCard = async (req, res) => {
 
   // Remove the card from the array
   const deletedCard = user.cards.splice(cardIndex, 1)[0];
-
+  console.log(cardIndex, deletedCard);
   // Update priority numbers of remaining cards
   for (const card of user.cards) {
     if (card.priorityNumber > deletedCard.priorityNumber) {
@@ -114,6 +115,7 @@ export const deleteCard = async (req, res) => {
   }
 
   // Save the updated user document
+  user.markModified("cards");
   await user.save();
   res.status(StatusCodes.OK).json({ msg: "card deleted" });
 };
@@ -171,4 +173,12 @@ export const freezeCard = async (req, res) => {
   await user.save();
 
   res.status(StatusCodes.OK).json({ msg: "Card Freezed" });
+};
+
+export const getSingleCard = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findOne({ _id: req.user.userId });
+
+  const card = await retreiveSingleCard(id, user);
+  res.status(StatusCodes.OK).json({ card });
 };
