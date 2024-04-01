@@ -15,7 +15,7 @@
   "crons": [
     {
       "path": "/renew_limit",
-      "schedule": "30 11 1 * *"
+      "schedule": "37 6 1 * *"
     },
     {
       "path": "/pay_loan",
