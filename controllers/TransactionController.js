@@ -8,7 +8,8 @@ import Transaction from "../models/Transaction.js";
 import BanksCard from "../models/BanksCardModel.js";
 import VirtualCard from "../models/VirtualCard.js";
 import User from "../models/UserModel.js";
-import { getUserCards } from "../utils/blockFunctions.js";
+import { getUserCards, retreiveSingleCard } from "../utils/blockFunctions.js";
+import { getContract } from "../utils/contracts.js";
 
 export const performTransaction = async (req, res) => {
   const { cardNumber, cvv, amount, merchant } = req.body;
@@ -92,6 +93,74 @@ export const performTransaction = async (req, res) => {
     }
   }
   res.status(StatusCodes.OK).json({ msg: "Transaction Performed" });
+};
+
+export const getAllTransactions = async (req, res) => {
+  const { month } = req.body;
+  const startDate = new Date(month);
+  const endDate = new Date(month);
+
+  // Get the start and end of the month
+  startDate.setDate(1);
+  endDate.setMonth(endDate.getMonth() + 1, 0);
+
+  console.log(startDate, endDate);
+  // MongoDB aggregation pipeline to filter transactions based on month
+  const transactions = await Transaction.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startDate, $lte: endDate },
+      },
+    },
+  ]);
+
+  res.status(StatusCodes.OK).json({ transactions: transactions });
+};
+
+export const getSingleTransaction = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId });
+  const { id } = req.params;
+  const transaction = await Transaction.findOne({ _id: id });
+  if (!transaction) {
+    throw new Error(`No transaction with Id : ${id}`);
+  }
+  let transactionCard = {};
+  if (transaction.isVirtualCardUsed) {
+    transactionCard = await VirtualCard.findOne({
+      _id: transaction.transaction_virtual_card,
+    });
+  } else {
+    transactionCard = await retreiveSingleCard(
+      transaction.transaction_card,
+      user
+    );
+  }
+  let transactionObject = {
+    ...transaction._doc,
+    ...transactionCard,
+  };
+
+  res.status(StatusCodes.OK).json({ ...transactionObject });
+};
+
+export const getSingleCardTransactions = async (req, res) => {
+  const { id } = req.params;
+  const { month } = req.body;
+  const startDate = new Date(month);
+  const endDate = new Date(month);
+
+  // Get the start and end of the month
+  startDate.setDate(1);
+  endDate.setMonth(endDate.getMonth() + 1, 0);
+  const transactions = await Transaction.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startDate, $lte: endDate },
+        transaction_card: id,
+      },
+    },
+  ]);
+  res.status(StatusCodes.OK).json({ transactions });
 };
 
 export const payLoan = async (req, res) => {

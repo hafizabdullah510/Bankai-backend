@@ -15,6 +15,7 @@ import AuthRouter from "./routes/AuthRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
 import CardRouter from "./routes/CardRoutes.js";
 import TransactionRouter from "./routes/TransactionRoutes.js";
+import UserTransactionsRouter from "./routes/UserTransactions.js";
 
 //Middlewares
 import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
@@ -45,6 +46,11 @@ app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/card", authenticationMiddleware, CardRouter);
 app.use("/api/v1/transaction", TransactionRouter);
+app.use(
+  "/api/v1/user_transactions",
+  authenticationMiddleware,
+  UserTransactionsRouter
+);
 //cron jobs
 app.use("/renew_limit", renewLimit);
 app.use("/pay_loan", payLoan);
