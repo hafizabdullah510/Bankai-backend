@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   phoneNumber: String,
   cnic: String,
   email: String,
+  applicantId: String,
   role: {
     type: String,
     enum: ["admin", "user"],
@@ -16,9 +17,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
-  isKycVerified: {
-    type: Boolean,
-    default: true,
+  kycStatus: {
+    type: String,
+    enum: ["not_initiated", "pending", "verified", "failed"],
+    default: "not_initiated",
   },
   isPremiumUser: {
     type: Boolean,

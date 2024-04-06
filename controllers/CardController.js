@@ -31,7 +31,11 @@ export const addCard = async (req, res) => {
     throw new UNAUTHORIZED_ERROR("Not Authorized to add card.");
   }
 
-  if (!user.isKycVerified) {
+  if (
+    user.kycStatus === "not_initiated" ||
+    user.kycStatus === "failed" ||
+    user.kycStatus === "pending"
+  ) {
     throw new UNAUTHORIZED_ERROR("Please perform KYC to add card.");
   }
 
