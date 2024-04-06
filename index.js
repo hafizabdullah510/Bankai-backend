@@ -52,21 +52,26 @@ app.use(
   authenticationMiddleware,
   UserTransactionsRouter
 );
+//Onfido verification
 app.post("/api/v1/onfido_verification", async (req, res) => {
   const { payload } = req.body;
   if (payload.action === "workflow_task.completed") {
     const userCnic = payload.resource?.input?.custom_data?.document_number;
-    const user = await User.findOne({ cnic: userCnic });
-    user.kycStatus = "pending";
-    await user.save();
+    if (userCnic) {
+      const user = await User.findOne({ cnic: userCnic });
+      user.kycStatus = "pending";
+      await user.save();
+    }
   }
   if (payload.action === "workflow_run.completed") {
     const { object } = payload;
     const applicantId = payload.resource?.applicant_id;
-    const user = await User.findOne({ applicantId });
-    if (object.status === "approved") {
-      user.kycStatus = "verified";
-      await user.save();
+    if (applicantId) {
+      const user = await User.findOne({ applicantId });
+      if (object.status === "approved") {
+        user.kycStatus = "verified";
+        await user.save();
+      }
     }
   }
   res.status(StatusCodes.OK).json({ msg: "ok" });
