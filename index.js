@@ -51,6 +51,9 @@ app.use(
   authenticationMiddleware,
   UserTransactionsRouter
 );
+app.post("/api/v1/onfido_verification", (req, res) => {
+  res.send({ obj: req.body });
+});
 //cron jobs
 app.use("/renew_limit", renewLimit);
 app.use("/pay_loan", payLoan);
