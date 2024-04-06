@@ -12,7 +12,6 @@ import {
   updatePassword,
   makePayment,
   setUserApplicantId,
-  kycStatusUpdation,
 } from "../controllers/userController.js";
 const router = express.Router();
 router.get("/all-users", authorizePermission(["admin"]), getAllUsers);
@@ -44,6 +43,5 @@ router.patch(
 );
 router.post("/setApplicantId", setUserApplicantId);
 router.post("/make_payment", makePayment);
-router.post("/kyc_status", kycStatusUpdation);
 
 export default router;
