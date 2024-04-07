@@ -201,3 +201,12 @@ export const unfreezeCard = async (req, res) => {
   await user.save();
   res.status(StatusCodes.OK).json({ msg: "Card Unfreezed" });
 };
+export const getUserVirtualCard = async (req, res) => {
+  const userVirtualCard = await VirtualCard.findOne({
+    ownedBy: req.user.userId,
+  });
+  if (!userVirtualCard) {
+    throw new BAD_REQUEST_ERROR("No virtual card for this user.");
+  }
+  res.status(StatusCodes.OK).json({ userVirtualCard });
+};

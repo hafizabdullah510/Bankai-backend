@@ -8,6 +8,7 @@ import {
   freezeCard,
   getSingleCard,
   unfreezeCard,
+  getUserVirtualCard,
 } from "../controllers/CardController.js";
 import {
   validateAddCardInput,
@@ -22,4 +23,6 @@ router.get("/:id", getSingleCard);
 router.post("/changePriority", changePriority);
 router.get("/freeze_card/:id", freezeCard);
 router.get("/unfreeze_card/:id", unfreezeCard);
+router.get("/user/virtual_card", getUserVirtualCard);
+
 export default router;
