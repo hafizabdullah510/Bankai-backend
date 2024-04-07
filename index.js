@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import morgan from "morgan";
 import mongoose from "mongoose";
+import fs from "fs";
 import { StatusCodes } from "http-status-codes";
 import cookieParser from "cookie-parser";
 import { renewLimit } from "./controllers/CardController.js";
@@ -75,6 +76,25 @@ app.post("/api/v1/onfido_verification", async (req, res) => {
     }
   }
   res.status(StatusCodes.OK).json({ msg: "ok" });
+});
+//.well-known
+app.get("/.well-known/assetlinks.json", (req, res) => {
+  fs.readFile("./.well-known/assetlinks.json", (err, data) => {
+    if (err) {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Internal Server Error");
+      return;
+    }
+
+    // Parse the JSON data
+    const jsonData = JSON.parse(data);
+
+    // Set response headers
+    res.writeHead(200, { "Content-Type": "application/json" });
+
+    // Send the JSON data as response
+    res.end(JSON.stringify(jsonData));
+  });
 });
 
 //cron jobs

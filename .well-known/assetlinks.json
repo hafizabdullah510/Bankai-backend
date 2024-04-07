@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.bankai.bankai",
+    "sha256_cert_fingerprints":
+    ["A7:AB:72:56:39:5A:1A:A2:2F:86:E6:F5:F2:A1:88:DE:B7:9B:9C:E0:AA:4B:B0:DB:5A:08:1F:9A:8F:06:1F:1C"]
+  }
+}]
