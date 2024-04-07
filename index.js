@@ -79,7 +79,7 @@ app.post("/api/v1/onfido_verification", async (req, res) => {
 });
 //.well-known
 app.get("/.well-known/assetlinks.json", (req, res) => {
-  fs.readFile("./.well-known/assetlinks.json", (err, data) => {
+  fs.readFile(process.cwd() + "/.well-known/assetlinks.json", (err, data) => {
     if (err) {
       res.writeHead(500, { "Content-Type": "text/plain" });
       res.end("Internal Server Error");
