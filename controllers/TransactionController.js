@@ -40,6 +40,7 @@ export const performTransaction = async (req, res) => {
         amount,
         merchant,
         transaction_card: card.cardID,
+        performedBy: card.ownedBy,
         transaction_virtual_card: null,
       });
       break;
@@ -57,6 +58,7 @@ export const performTransaction = async (req, res) => {
         await Transaction.create({
           amount,
           merchant,
+          performedBy: card.ownedBy,
           transaction_card: card.cardID,
           transaction_virtual_card: null,
         });
@@ -78,6 +80,7 @@ export const performTransaction = async (req, res) => {
           amount,
           merchant,
           transaction_card: null,
+          performedBy: virtualCard.ownedBy,
           transaction_virtual_card: virtualCard._id,
           isVirtualCardUsed: true,
         });
@@ -96,6 +99,7 @@ export const performTransaction = async (req, res) => {
 };
 
 export const getAllTransactions = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId });
   const { month } = req.body;
   const startDate = new Date(month);
   const endDate = new Date(month);
@@ -110,6 +114,7 @@ export const getAllTransactions = async (req, res) => {
     {
       $match: {
         createdAt: { $gte: startDate, $lte: endDate },
+        performedBy: user._id.toString(),
       },
     },
   ]);
