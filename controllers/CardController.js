@@ -45,7 +45,6 @@ export const addCard = async (req, res) => {
     cardHolderCnic,
     bankName,
     cardType,
-    cardHolderName,
     cardNumber,
     cvv,
   });
