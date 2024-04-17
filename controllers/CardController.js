@@ -60,8 +60,6 @@ export const addCard = async (req, res) => {
 
   const cardID = uuidv4().substring(0, 25);
 
-  res.status(StatusCodes.OK).json({ msg: "card added" });
-
   const card = await cardContact.storeCardDetails({
     cardID,
     cardNumber: cardNumber.toString(),
@@ -97,6 +95,7 @@ export const addCard = async (req, res) => {
       ownedBy: req.user.userId,
     });
   }
+  res.status(StatusCodes.OK).json({ msg: "card added" });
 };
 export const deleteCard = async (req, res) => {
   const { id } = req.params;
