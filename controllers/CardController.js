@@ -11,7 +11,6 @@ import { getContract } from "../utils/contracts.js";
 import { v4 as uuidv4 } from "uuid";
 import { getUserCards } from "../utils/blockFunctions.js";
 import { retreiveSingleCard } from "../utils/blockFunctions.js";
-import { ethers } from "ethers";
 
 export const addCard = async (req, res) => {
   const {
