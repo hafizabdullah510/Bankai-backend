@@ -19,9 +19,24 @@ export const performTransaction = async (req, res) => {
   }
   const singleUser = await User.findOne({ _id: virtualCard.ownedBy });
   const user = singleUser.delPassword();
+  let transactionCompleted = false;
+
+  if (amount <= virtualCard.wallet_amount) {
+    console.log("Its wallet");
+    transactionCompleted = true;
+    virtualCard.wallet_amount -= amount;
+    await virtualCard.save();
+    await Transaction.create({
+      amount,
+      merchant,
+      transaction_card: null,
+      performedBy: virtualCard.ownedBy,
+      transaction_virtual_card: virtualCard._id,
+      isVirtualCardUsed: true,
+    });
+  }
 
   const cardsArray = await getUserCards(user);
-  let transactionCompleted = false;
   for (let i = 0; i < cardsArray.length; i++) {
     const card = cardsArray[i];
     const userBankCard = await BanksCard.findOne({
@@ -29,6 +44,7 @@ export const performTransaction = async (req, res) => {
     });
     if (
       !card.isCardFreeze &&
+      !transactionCompleted &&
       card.cardType === "credit" &&
       amount <= userBankCard.available_limit
     ) {

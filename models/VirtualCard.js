@@ -9,6 +9,7 @@ const virtualCardSchema = new mongoose.Schema({
   max_credit_limit: Number,
   available_limit: Number,
   loan_taken: Number,
+  wallet_amount: Number,
   ownedBy: {
     type: mongoose.Types.ObjectId,
     ref: "User",

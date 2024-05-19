@@ -208,3 +208,49 @@ export const getUserVirtualCard = async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ userVirtualCard });
 };
+
+export const recharge_wallet = async (req, res) => {
+  const { recharge_amount, cardNumber, cvv, expiryDate } = req.body;
+  const userVirtualCard = await VirtualCard.findOne({
+    ownedBy: req.user.userId,
+  });
+  if (!recharge_amount || !cardNumber || !cvv || !expiryDate) {
+    throw new BAD_REQUEST_ERROR("Please provide all the required fields");
+  }
+  const userBankCard = await BankCard.findOne({
+    cardNumber,
+    cvv,
+  });
+  if (!userBankCard) {
+    throw new BAD_REQUEST_ERROR("Invalid Card");
+  }
+  const currentDate = new Date(Date.now());
+
+  if (expiryDate <= currentDate) {
+    throw new BAD_REQUEST_ERROR("Please enter a valid card");
+  }
+
+  if (
+    userBankCard.cardType === "credit" &&
+    userBankCard.available_limit >= recharge_amount
+  ) {
+    userVirtualCard.wallet_amount += recharge_amount;
+    userBankCard.available_limit -= recharge_amount;
+    await userVirtualCard.save();
+    await userBankCard.save();
+  } else if (
+    userBankCard.cardType === "debit" &&
+    userBankCard.availableBalance >= recharge_amount
+  ) {
+    userVirtualCard.wallet_amount += recharge_amount;
+    userBankCard.availableBalance -= recharge_amount;
+    await userVirtualCard.save();
+    await userBankCard.save();
+  } else {
+    throw new BAD_REQUEST_ERROR("Wallet recharge failed!.Try again later");
+  }
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ msg: "Wallet recharged successfully!" });
+};
