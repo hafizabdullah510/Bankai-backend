@@ -37,6 +37,13 @@ export const addCard = async (req, res) => {
   ) {
     throw new UNAUTHORIZED_ERROR("Please perform KYC to add card.");
   }
+  const currentDate = new Date(Date.now());
+
+  if (user.subscription_expiry_Date < currentDate) {
+    throw new UNAUTHORIZED_ERROR(
+      "Your subscription has expired.Please Renew your subscription"
+    );
+  }
 
   const cardContact = await getContract();
 
@@ -50,7 +57,6 @@ export const addCard = async (req, res) => {
   if (!isCardFound) {
     throw new BAD_REQUEST_ERROR("Please enter a valid card");
   }
-  const currentDate = new Date(Date.now());
 
   if (expiryDate <= currentDate) {
     throw new BAD_REQUEST_ERROR("Please enter a valid card");
@@ -66,16 +72,16 @@ export const addCard = async (req, res) => {
     cardHolderName,
     cvv: cvv.toString(),
     expiryDate,
+    issueDate,
+    cardType,
+    cardHolderCnic,
+    bankName,
   });
   const cardReceipt = await card.wait();
   console.log(cardReceipt);
 
   user.cards.push({
     cardID,
-    issueDate,
-    bankName,
-    cardHolderCnic,
-    cardType,
     isCardFreeze: false,
     ownedBy: req.user.userId,
     priorityNumber,

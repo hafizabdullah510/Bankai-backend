@@ -21,6 +21,10 @@ contract CardDetailsContract {
         string cardNumber;
         string cvv;
         string expiryDate;
+        string issueDate;
+        string cardHolderCnic;
+        string cardType;
+        string bankName;
         bool exists;
     }
     
@@ -30,6 +34,10 @@ contract CardDetailsContract {
         string cardHolderName;
         string cvv;
         string expiryDate;
+        string issueDate;
+        string cardHolderCnic;
+        string cardType;
+        string bankName;
     }
 
     mapping(string => Card) private cardDetails;
@@ -45,6 +53,10 @@ contract CardDetailsContract {
             _params.cardNumber,
             _params.cvv,
             _params.expiryDate,
+            _params.issueDate,
+            _params.cardHolderCnic,
+            _params.cardType,
+            _params.bankName,
             true
         );
 

@@ -11,11 +11,6 @@ const stripe = new Stripe(
   "sk_test_51OvwcEHoalhmTGHSrNJ1nKB9ivxwSNr8dT7DNfFCL1YzwFQcbaQxSuKN8yXmx1fhRlqGBw4zm3B2A37Ud4VzIAVJ00ML05Bgug"
 );
 
-export const getAllUsers = async (req, res) => {
-  const users = await User.find({ role: "user" });
-  const filteredUsers = users.map((user) => user.delPassword());
-  res.status(StatusCodes.OK).json({ filteredUsers });
-};
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   await User.findByIdAndUpdate(id, req.body, {
@@ -95,4 +90,15 @@ export const setUserApplicantId = async (req, res) => {
   await user.save();
 
   res.status(StatusCodes.OK).json({ msg: "Applicant id assigned" });
+};
+
+export const userPremiumSubscription = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId });
+
+  user.isPremiumUser = true;
+  user.subscription_expiry_Date = new Date(
+    Date.now() + 1000 * 60 * 60 * 24 * 30
+  );
+  await user.save();
+  res.status(StatusCodes.OK).json({ msg: "Subscription Successful!" });
 };

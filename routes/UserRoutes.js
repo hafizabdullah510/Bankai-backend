@@ -1,5 +1,4 @@
 import express from "express";
-import { getAllUsers } from "../controllers/userController.js";
 import { authorizePermission } from "../middlewares/authMiddleware.js";
 import {
   validateUserIdParam,
@@ -12,9 +11,9 @@ import {
   updatePassword,
   makePayment,
   setUserApplicantId,
+  userPremiumSubscription,
 } from "../controllers/userController.js";
 const router = express.Router();
-router.get("/all-users", authorizePermission(["admin"]), getAllUsers);
 router.get(
   "/:id",
   authorizePermission(["admin"]),
@@ -43,5 +42,6 @@ router.patch(
 );
 router.post("/setApplicantId", setUserApplicantId);
 router.post("/make_payment", makePayment);
+router.get("/account/premium-subscription", userPremiumSubscription);
 
 export default router;

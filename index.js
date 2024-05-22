@@ -16,12 +16,16 @@ const app = express();
 import AuthRouter from "./routes/AuthRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
 import CardRouter from "./routes/CardRoutes.js";
+import AdminRouter from "./routes/AdminRoutes.js";
 import TransactionRouter from "./routes/TransactionRoutes.js";
 import UserTransactionsRouter from "./routes/UserTransactions.js";
 
 //Middlewares
 import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
-import { authenticationMiddleware } from "./middlewares/authMiddleware.js";
+import {
+  authenticationMiddleware,
+  isUserBlocked,
+} from "./middlewares/authMiddleware.js";
 
 app.use(express.json());
 
@@ -46,7 +50,8 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
-app.use("/api/v1/card", authenticationMiddleware, CardRouter);
+app.use("/api/v1/admin", authenticationMiddleware, AdminRouter);
+app.use("/api/v1/card", authenticationMiddleware, isUserBlocked, CardRouter);
 app.use("/api/v1/transaction", TransactionRouter);
 app.use(
   "/api/v1/user_transactions",

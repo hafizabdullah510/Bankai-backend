@@ -16,11 +16,13 @@ import {
 
 export const register = async (req, res) => {
   const { cnic, phoneNumber } = req.body;
+  req.body.subscription_expiry_Date = new Date(
+    Date.now() + 1000 * 60 * 60 * 24 * 15
+  );
   await User.create(req.body);
   const token = createJWT({ cnic, phoneNumber });
   //cookie
   addCookiesToResponse({ res, token });
-
   res.status(StatusCodes.CREATED).json({ msg: "user created" });
 };
 
@@ -42,7 +44,7 @@ export const login = async (req, res) => {
     secure: process.env.NODE_ENV === "production",
   });
 
-  res.status(StatusCodes.OK).json({ msg: "logged In" });
+  res.status(StatusCodes.OK).json({ user });
 };
 
 export const forgot_password = async (req, res) => {

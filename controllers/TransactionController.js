@@ -9,7 +9,6 @@ import BanksCard from "../models/BanksCardModel.js";
 import VirtualCard from "../models/VirtualCard.js";
 import User from "../models/UserModel.js";
 import { getUserCards, retreiveSingleCard } from "../utils/blockFunctions.js";
-import { getContract } from "../utils/contracts.js";
 
 export const performTransaction = async (req, res) => {
   const { cardNumber, cvv, amount, merchant } = req.body;
@@ -19,6 +18,20 @@ export const performTransaction = async (req, res) => {
   }
   const singleUser = await User.findOne({ _id: virtualCard.ownedBy });
   const user = singleUser.delPassword();
+
+  const currentDate = new Date(Date.now());
+
+  if (user.subscription_expiry_Date < currentDate) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ msg: "transaction failed" });
+  }
+
+  if (user.isBlocked) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ msg: "transaction failed" });
+  }
   let transactionCompleted = false;
 
   if (amount <= virtualCard.wallet_amount) {

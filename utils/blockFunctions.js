@@ -15,6 +15,10 @@ export const getUserCards = async (user) => {
     cardNumber: parseInt(card[3]),
     cvv: parseInt(card[4]),
     expiryDate: card[5],
+    issueDate: card[6],
+    cardHolderCnic: card[7],
+    cardType: card[8],
+    bankName: card[9],
   }));
   //from db
   const userCardsArray = user.cards;
@@ -46,13 +50,28 @@ export const getUserCards = async (user) => {
 export const retreiveSingleCard = async (id, user) => {
   const cardContract = await getContract();
   const card = await cardContract.retrieveCardDetails(id);
-  const [_, cardID, cardHolderName, cardNumber, cvv, expiryDate] = card;
+  const [
+    _,
+    cardID,
+    cardHolderName,
+    cardNumber,
+    cvv,
+    expiryDate,
+    issueDate,
+    cardHolderCnic,
+    cardType,
+    bankName,
+  ] = card;
   const cardData = {
     cardID,
     cardHolderName,
     cardNumber: parseInt(cardNumber),
     cvv: parseInt(cvv),
     expiryDate,
+    issueDate,
+    cardHolderCnic,
+    cardType,
+    bankName,
   };
 
   const matchedCard = user.cards.find(
@@ -67,6 +86,10 @@ export const retreiveSingleCard = async (id, user) => {
       cardNumber: cardData.cardNumber,
       cvv: cardData.cvv,
       expiryDate: cardData.expiryDate,
+      issueDate: cardData.issueDate,
+      cardHolderCnic: cardData.cardHolderCnic,
+      cardType: cardData.cardType,
+      bankName: cardData.bankName,
     };
 
     return combinedCardObject;

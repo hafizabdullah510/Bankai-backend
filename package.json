@@ -7,7 +7,9 @@
   "scripts": {
     "server": "nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "echo hello"
+    "vercel-build": "echo hello",
+    "client": "npm start --prefix client",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",

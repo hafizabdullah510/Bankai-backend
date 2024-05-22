@@ -26,6 +26,8 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isBlocked: Boolean,
+  subscription_expiry_Date: Date,
   password: String,
   passwordToken: String,
   passwordTokenExpirationDate: Date,
