@@ -127,7 +127,6 @@ const AppProvider = ({ children }) => {
     dispatch({ type: ALL_USERS_BEGIN });
     try {
       const { data } = await authFetch.get("/admin/all-users");
-
       const { users } = data;
       dispatch({ type: ALL_USERS_SUCCESS, payload: { users } });
     } catch (err) {
