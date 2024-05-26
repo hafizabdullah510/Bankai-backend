@@ -14,12 +14,6 @@ import {
   userPremiumSubscription,
 } from "../controllers/userController.js";
 const router = express.Router();
-router.get(
-  "/:id",
-  authorizePermission(["admin"]),
-  validateUserIdParam,
-  getSingleUser
-);
 
 // router.patch(
 //   "/:id",

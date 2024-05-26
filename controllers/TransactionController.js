@@ -64,6 +64,8 @@ export const performTransaction = async (req, res) => {
       console.log("it credit");
       transactionCompleted = true;
       userBankCard.available_limit -= amount;
+      virtualCard.wallet_amount += amount;
+      virtualCard.wallet_amount -= amount;
       await userBankCard.save();
       await Transaction.create({
         amount,
@@ -83,6 +85,8 @@ export const performTransaction = async (req, res) => {
         console.log("debit");
         transactionCompleted = true;
         userBankCard.availableBalance -= amount;
+        virtualCard.wallet_amount += amount;
+        virtualCard.wallet_amount -= amount;
         await userBankCard.save();
         await Transaction.create({
           amount,
@@ -102,6 +106,8 @@ export const performTransaction = async (req, res) => {
       if (amount <= virtualCard.available_limit) {
         console.log("virtual");
         virtualCard.available_limit -= amount;
+        virtualCard.wallet_amount += amount;
+        virtualCard.wallet_amount -= amount;
         virtualCard.loan_taken += amount;
         transactionCompleted = true;
         await virtualCard.save();
@@ -114,14 +120,30 @@ export const performTransaction = async (req, res) => {
           isVirtualCardUsed: true,
         });
       } else {
+        await Transaction.create({
+          amount,
+          merchant,
+          transaction_card: null,
+          transactionStatus: "failed",
+          performedBy: virtualCard.ownedBy,
+          transaction_virtual_card: null,
+        });
         return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ msg: "transaction failed" });
       }
     } else {
+      await Transaction.create({
+        amount,
+        merchant,
+        transaction_card: null,
+        transactionStatus: "failed",
+        performedBy: virtualCard.ownedBy,
+        transaction_virtual_card: null,
+      });
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "transaction failed due to less credit score." });
+        .json({ msg: "transaction failed" });
     }
   }
   res.status(StatusCodes.OK).json({ msg: "Transaction Performed" });

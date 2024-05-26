@@ -1,22 +1,15 @@
-import Logo from "./Logo";
-import FormRow from "./FormRow";
-import Alert from "./Alert";
-import BigSideBar from "./BigSideBar";
-import SmallSideBar from "./SmallSideBar";
-import NavBar from "./NavBar";
-import FormRowSelect from "./FormRowSelect";
-
-import Loading from "./Loading";
-
-import PageBtnContainer from "./PageBtnContainer";
-export {
-  Logo,
-  FormRow,
-  Alert,
-  BigSideBar,
-  SmallSideBar,
-  NavBar,
-  FormRowSelect,
-  Loading,
-  PageBtnContainer,
-};
+export { default as Logo } from "./Logo";
+export { default as FormRow } from "./FormRow";
+export { default as BigSidebar } from "./BigSidebar";
+export { default as SmallSidebar } from "./SmallSidebar";
+export { default as Navbar } from "./Navbar";
+export { default as FormRowSelect } from "./FormRowSelect";
+export { default as SearchContainer } from "./SearchContainer";
+export { default as SearchContainerTransactions } from "./SearchContainerTransactions";
+export { default as SubmitBtn } from "./SubmitBtn";
+export { default as Loading } from "./Loading";
+export { default as TableContainer } from "./TableContainer";
+export { default as TableContainerTransactions } from "./TableContainerTransactions";
+export { default as PopUpModal } from "./PopUpModal";
+export { default as PopUpModalTransaction } from "./PopUpModalTransaction";
+export { default as BlockPopUp } from "./BlockPopUp";

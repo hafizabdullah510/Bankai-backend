@@ -1,37 +1,45 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-const userSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  phoneNumber: String,
-  cnic: String,
-  email: String,
-  applicantId: String,
-  role: {
-    type: String,
-    enum: ["admin", "user"],
-    default: "user",
+const userSchema = new mongoose.Schema(
+  {
+    firstName: String,
+    lastName: String,
+    phoneNumber: String,
+    cnic: String,
+    email: String,
+    applicantId: String,
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
+    cards: [],
+    credit_score: {
+      type: Number,
+      default: 5,
+    },
+    kycStatus: {
+      type: String,
+      enum: ["not_initiated", "pending", "verified"],
+      default: "not_initiated",
+    },
+    isPremiumUser: {
+      type: Boolean,
+      default: false,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    subscription_expiry_Date: Date,
+    password: String,
+    passwordToken: String,
+    passwordTokenExpirationDate: Date,
   },
-  cards: [],
-  credit_score: {
-    type: Number,
-    default: 5,
-  },
-  kycStatus: {
-    type: String,
-    enum: ["not_initiated", "pending", "verified", "failed"],
-    default: "not_initiated",
-  },
-  isPremiumUser: {
-    type: Boolean,
-    default: false,
-  },
-  isBlocked: Boolean,
-  subscription_expiry_Date: Date,
-  password: String,
-  passwordToken: String,
-  passwordTokenExpirationDate: Date,
-});
+  {
+    timestamps: true,
+  }
+);
 
 userSchema.methods.delPassword = function () {
   let obj = this.toObject();

@@ -11,6 +11,7 @@ import { getContract } from "../utils/contracts.js";
 import { v4 as uuidv4 } from "uuid";
 import { getUserCards } from "../utils/blockFunctions.js";
 import { retreiveSingleCard } from "../utils/blockFunctions.js";
+import BankaiConstants from "../models/BankaiConstants.js";
 
 export const addCard = async (req, res) => {
   const {
@@ -27,7 +28,7 @@ export const addCard = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId });
 
   if (!(user.cnic === cardHolderCnic)) {
-    throw new UNAUTHORIZED_ERROR("Not Authorized to add card.");
+    throw new UNAUTHENTICATED_ERROR("Not Authorized to add card.");
   }
 
   if (
@@ -90,6 +91,7 @@ export const addCard = async (req, res) => {
   const isVirtualCardCreated = await VirtualCard.findOne({
     ownedBy: req.user.userId,
   });
+  const constants = await BankaiConstants.find({});
   if (!isVirtualCardCreated) {
     await VirtualCard.create({
       cardHolderName,
@@ -98,6 +100,10 @@ export const addCard = async (req, res) => {
       cvv: Math.floor(Math.random() * 900) + 100,
       issueDate: new Date(Date.now()),
       expiryDate: currentDate.setFullYear(currentDate.getFullYear() + 5),
+      max_credit_limit: constants[0].anti_embarrassment_amount,
+      available_limit: 50000,
+      wallet_amount: 0,
+      loan_taken: 0,
       ownedBy: req.user.userId,
     });
   }
@@ -149,7 +155,6 @@ export const changePriority = async (req, res) => {
 };
 export const getAllCards = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId });
-
   const combinedArray = await getUserCards(user);
 
   res.status(StatusCodes.OK).json({ cards: combinedArray });
@@ -221,7 +226,7 @@ export const recharge_wallet = async (req, res) => {
     ownedBy: req.user.userId,
   });
   if (!recharge_amount) {
-    throw new BAD_REQUEST_ERROR("Please provide all the required fields");
+    throw new BAD_REQUEST_ERROR("Please provide recharge amount!");
   }
   userVirtualCard.wallet_amount += recharge_amount;
   await userVirtualCard.save();

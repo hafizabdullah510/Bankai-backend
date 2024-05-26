@@ -4,6 +4,7 @@ dotenv.config();
 import express from "express";
 import morgan from "morgan";
 import mongoose from "mongoose";
+import cors from "cors";
 import fs from "fs";
 import { StatusCodes } from "http-status-codes";
 import cookieParser from "cookie-parser";
@@ -28,6 +29,7 @@ import {
 } from "./middlewares/authMiddleware.js";
 
 app.use(express.json());
+app.use(cors());
 
 app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {

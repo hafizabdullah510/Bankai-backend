@@ -3,16 +3,23 @@ import {
   getAllUsers,
   getAllTransactions,
   getSingleUserTransactions,
-  getLoanTakenUsers,
-  getLoanDefaulters,
   blockUser,
   UnBlockUser,
+  getSingleUser,
+  getSingleTransaction,
+  setAntiEmbarrassmentAmount,
 } from "../controllers/AdminController.js";
 import { authorizePermission } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 router.get("/all-users", authorizePermission(["admin"]), getAllUsers);
+
+router.post(
+  "/anti-embarrassment-amount",
+  authorizePermission(["admin"]),
+  setAntiEmbarrassmentAmount
+);
 router.get(
   "/all-transactions",
   authorizePermission(["admin"]),
@@ -23,16 +30,13 @@ router.get(
   authorizePermission(["admin"]),
   getSingleUserTransactions
 );
+router.get("/single-user/:id", authorizePermission(["admin"]), getSingleUser);
 router.get(
-  "/anti-embarrassment-availers",
+  "/single-transaction/:id",
   authorizePermission(["admin"]),
-  getLoanTakenUsers
+  getSingleTransaction
 );
-router.get(
-  "/loan-defaulters",
-  authorizePermission(["admin"]),
-  getLoanDefaulters
-);
+
 router.get("/block-user/:id", authorizePermission(["admin"]), blockUser);
 router.get("/un-block-user/:id", authorizePermission(["admin"]), UnBlockUser);
 
