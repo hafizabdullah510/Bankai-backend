@@ -46,6 +46,12 @@ export const addCard = async (req, res) => {
     );
   }
 
+  if (!user.isPremiumUser && user.cards.length === 3) {
+    throw new UNAUTHORIZED_ERROR(
+      "Please Avail Premium Subscription to further add cards."
+    );
+  }
+
   const cardContact = await getContract();
 
   const isCardFound = await BankCard.findOne({
