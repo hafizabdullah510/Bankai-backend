@@ -11,6 +11,8 @@ const stripe = new Stripe(
   "sk_test_51OvwcEHoalhmTGHSrNJ1nKB9ivxwSNr8dT7DNfFCL1YzwFQcbaQxSuKN8yXmx1fhRlqGBw4zm3B2A37Ud4VzIAVJ00ML05Bgug"
 );
 import { SendNotification } from "../utils/notificationFunctions.js";
+import { getFormattedDateAndTime } from "../utils/dateAndTime.js";
+import { saveUserNotifications } from "../utils/saveUserNotifications.js";
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
@@ -38,9 +40,8 @@ export const getCurrentUser = async (req, res) => {
   const user = adminUser.delPassword();
   const currentDate = new Date(Date.now());
   if (user.subscription_expiry_Date < currentDate) {
-    SendNotification(
-      `Your subscription is expired. Please renew the subscription.`
-    );
+    let message = `Your subscription is expired. Please renew the subscription.`;
+    SendNotification(message);
   }
   res.status(StatusCodes.OK).json({ user });
 };
@@ -107,7 +108,14 @@ export const userPremiumSubscription = async (req, res) => {
     Date.now() + 1000 * 60 * 60 * 24 * 30
   );
   await user.save();
-  SendNotification("Your subscription is renewed.");
+  let message = "Your subscription is renewed.";
+  await saveUserNotifications(
+    message,
+    getFormattedDateAndTime().formattedDate,
+    getFormattedDateAndTime().formattedTime,
+    user._id
+  );
+  SendNotification(message);
   res.status(StatusCodes.OK).json({ msg: "Subscription Successful!" });
 };
 

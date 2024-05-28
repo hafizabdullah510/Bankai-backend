@@ -13,6 +13,8 @@ import { getUserCards } from "../utils/blockFunctions.js";
 import { retreiveSingleCard } from "../utils/blockFunctions.js";
 import BankaiConstants from "../models/BankaiConstants.js";
 import { SendNotification } from "../utils/notificationFunctions.js";
+import { getFormattedDateAndTime } from "../utils/dateAndTime.js";
+import { saveUserNotifications } from "../utils/saveUserNotifications.js";
 export const addCard = async (req, res) => {
   const {
     cardHolderName,
@@ -236,9 +238,14 @@ export const recharge_wallet = async (req, res) => {
   }
   userVirtualCard.wallet_amount += recharge_amount;
   await userVirtualCard.save();
-  SendNotification(
-    `An amount of ${recharge_amount} has been recharged in your Bankai wallet.`
+  let message = `An amount of ${recharge_amount} has been recharged in your Bankai wallet.`;
+  await saveUserNotifications(
+    message,
+    getFormattedDateAndTime().formattedDate,
+    getFormattedDateAndTime().formattedTime,
+    req.user.userId
   );
+  SendNotification(message);
   return res
     .status(StatusCodes.OK)
     .json({ msg: "Wallet recharged successfully!" });

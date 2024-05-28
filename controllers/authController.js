@@ -14,6 +14,8 @@ import {
   UNAUTHORIZED_ERROR,
 } from "../errors/CustomErrors.js";
 import { SendNotification } from "../utils/notificationFunctions.js";
+import { getFormattedDateAndTime } from "../utils/dateAndTime.js";
+import { saveUserNotifications } from "../utils/saveUserNotifications.js";
 
 export const register = async (req, res) => {
   const { cnic, phoneNumber } = req.body;
@@ -48,7 +50,14 @@ export const login = async (req, res) => {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     timeZone: "Asia/Karachi",
   });
-  SendNotification(`A log in request is initiated at ${formattedTime}`);
+  let message = `A log in request is initiated at ${formattedTime}`;
+  await saveUserNotifications(
+    message,
+    getFormattedDateAndTime().formattedDate,
+    getFormattedDateAndTime().formattedTime,
+    user._id
+  );
+  SendNotification(message);
   res.status(StatusCodes.OK).json({ msg: "logged In" });
 };
 

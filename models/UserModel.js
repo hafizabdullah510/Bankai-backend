@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    notifications: [],
     subscription_expiry_Date: Date,
     password: String,
     passwordToken: String,

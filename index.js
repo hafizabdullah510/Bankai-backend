@@ -12,6 +12,9 @@ import { renewLimit } from "./controllers/CardController.js";
 import { payLoan } from "./controllers/TransactionController.js";
 import User from "./models/UserModel.js";
 import { SendNotification } from "./utils/notificationFunctions.js";
+import { getFormattedDateAndTime } from "./utils/dateAndTime.js";
+import { saveUserNotifications } from "./utils/saveUserNotifications.js";
+
 const app = express();
 
 //Routes
@@ -69,7 +72,14 @@ app.post("/api/v1/onfido_verification", async (req, res) => {
     if (userCnic) {
       const user = await User.findOne({ cnic: userCnic });
       user.kycStatus = "pending";
-      SendNotification("Your KYC is being verified.Please Wait.");
+      message = "Your KYC is being verified.Please Wait";
+      await saveUserNotifications(
+        message,
+        getFormattedDateAndTime().formattedDate,
+        getFormattedDateAndTime().formattedTime,
+        user._id
+      );
+      SendNotification(message);
       await user.save();
     }
   }
@@ -80,7 +90,14 @@ app.post("/api/v1/onfido_verification", async (req, res) => {
       const user = await User.findOne({ applicantId });
       if (object.status === "approved") {
         user.kycStatus = "verified";
-        SendNotification("Your KYC has been verified.");
+        message = "Your KYC has been verified";
+        await saveUserNotifications(
+          message,
+          getFormattedDateAndTime().formattedDate,
+          getFormattedDateAndTime().formattedTime,
+          user._id
+        );
+        SendNotification(message);
         await user.save();
       }
     }

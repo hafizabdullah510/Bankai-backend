@@ -9,13 +9,13 @@ import BanksCard from "../models/BanksCardModel.js";
 import VirtualCard from "../models/VirtualCard.js";
 import User from "../models/UserModel.js";
 import { getUserCards, retreiveSingleCard } from "../utils/blockFunctions.js";
-import {
-  SendNotification,
-  SendNotificationToDevice,
-} from "../utils/notificationFunctions.js";
+import { SendNotification } from "../utils/notificationFunctions.js";
+import { saveUserNotifications } from "../utils/saveUserNotifications.js";
+import { getFormattedDateAndTime } from "../utils/dateAndTime.js";
 
 export const performTransaction = async (req, res) => {
   const { cardNumber, cvv, amount, merchant } = req.body;
+  let message = "";
   const virtualCard = await VirtualCard.findOne({ cardNumber, cvv });
   if (!virtualCard) {
     throw new UNAUTHORIZED_ERROR("Not Authorized to perform transaction");
@@ -25,24 +25,31 @@ export const performTransaction = async (req, res) => {
 
   const currentDate = new Date(Date.now());
 
-  const formattedDate = new Date().toLocaleDateString("en-US", {
-    timeZone: "Asia/Karachi",
-  });
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    timeZone: "Asia/Karachi",
-  });
-
+  const { formattedDate, formattedTime } = getFormattedDateAndTime();
   if (user.subscription_expiry_Date < currentDate) {
-    SendNotification(
-      `Transaction failed because your subscription is expired. Please renew your subscription.`
+    message = `Transaction failed because your subscription is expired. Please renew your subscription.`;
+
+    await saveUserNotifications(
+      message,
+      formattedDate,
+      formattedTime,
+      user._id
     );
+    SendNotification(message);
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ msg: "transaction failed" });
   }
 
   if (user.isBlocked) {
-    SendNotification(`Transaction failed because you have been blocked.`);
+    message = `Transaction failed because you have been blocked.`;
+    await saveUserNotifications(
+      message,
+      formattedDate,
+      formattedTime,
+      user._id
+    );
+    SendNotification(message);
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ msg: "transaction failed" });
@@ -62,9 +69,14 @@ export const performTransaction = async (req, res) => {
       transaction_virtual_card: virtualCard._id,
       isVirtualCardUsed: true,
     });
-    SendNotification(
-      `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+    message = `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`;
+    await saveUserNotifications(
+      message,
+      formattedDate,
+      formattedTime,
+      user._id
     );
+    SendNotification(message);
   }
 
   const cardsArray = await getUserCards(user);
@@ -92,9 +104,14 @@ export const performTransaction = async (req, res) => {
         performedBy: card.ownedBy,
         transaction_virtual_card: null,
       });
-      SendNotification(
-        `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+      message = `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`;
+      await saveUserNotifications(
+        message,
+        formattedDate,
+        formattedTime,
+        user._id
       );
+      SendNotification(message);
       break;
     }
     if (!transactionCompleted) {
@@ -116,9 +133,14 @@ export const performTransaction = async (req, res) => {
           transaction_card: card.cardID,
           transaction_virtual_card: null,
         });
-        SendNotification(
-          `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+        message = `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`;
+        await saveUserNotifications(
+          message,
+          formattedDate,
+          formattedTime,
+          user._id
         );
+        SendNotification(message);
         break;
       }
     }
@@ -142,9 +164,14 @@ export const performTransaction = async (req, res) => {
           transaction_virtual_card: virtualCard._id,
           isVirtualCardUsed: true,
         });
-        SendNotification(
-          `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+        message = `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`;
+        await saveUserNotifications(
+          message,
+          formattedDate,
+          formattedTime,
+          user._id
         );
+        SendNotification(message);
       } else {
         await Transaction.create({
           amount,
@@ -154,9 +181,14 @@ export const performTransaction = async (req, res) => {
           performedBy: virtualCard.ownedBy,
           transaction_virtual_card: null,
         });
-        SendNotification(
-          `Transaction failed of ${amount} due to insufficient funds at ${formattedTime}.`
+        message = `Transaction failed of ${amount} due to insufficient funds at ${formattedTime}.`;
+        await saveUserNotifications(
+          message,
+          formattedDate,
+          formattedTime,
+          user._id
         );
+        SendNotification(message);
 
         return res
           .status(StatusCodes.BAD_REQUEST)
@@ -171,7 +203,14 @@ export const performTransaction = async (req, res) => {
         performedBy: virtualCard.ownedBy,
         transaction_virtual_card: null,
       });
-      SendNotification(`Transaction failed of ${amount} at ${formattedTime}.`);
+      message = `Transaction failed of ${amount} at ${formattedTime}.`;
+      await saveUserNotifications(
+        message,
+        formattedDate,
+        formattedTime,
+        user._id
+      );
+      SendNotification(message);
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: "transaction failed" });
