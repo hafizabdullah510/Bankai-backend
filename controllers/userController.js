@@ -41,8 +41,8 @@ export const getCurrentUser = async (req, res) => {
     SendNotification(
       `Your subscription is expired. Please renew the subscription.`
     );
-    res.status(StatusCodes.OK).json({ user });
   }
+  res.status(StatusCodes.OK).json({ user });
 };
 export const updatePassword = async (req, res) => {
   const currentUser = await User.findOne({ _id: req.user.userId });
