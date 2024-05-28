@@ -13,6 +13,7 @@ import {
   BAD_REQUEST_ERROR,
   UNAUTHORIZED_ERROR,
 } from "../errors/CustomErrors.js";
+import { SendNotification } from "../utils/notificationFunctions.js";
 
 export const register = async (req, res) => {
   const { cnic, phoneNumber } = req.body;
@@ -44,6 +45,10 @@ export const login = async (req, res) => {
     secure: process.env.NODE_ENV === "production",
   });
 
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    timeZone: "Asia/Karachi",
+  });
+  SendNotification(`A log in request is initiated at ${formattedTime}`);
   res.status(StatusCodes.OK).json({ msg: "logged In" });
 };
 

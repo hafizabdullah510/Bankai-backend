@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getUserCards } from "../utils/blockFunctions.js";
 import { retreiveSingleCard } from "../utils/blockFunctions.js";
 import BankaiConstants from "../models/BankaiConstants.js";
-
+import { SendNotification } from "../utils/notificationFunctions.js";
 export const addCard = async (req, res) => {
   const {
     cardHolderName,
@@ -236,6 +236,9 @@ export const recharge_wallet = async (req, res) => {
   }
   userVirtualCard.wallet_amount += recharge_amount;
   await userVirtualCard.save();
+  SendNotification(
+    `An amount of ${recharge_amount} has been recharged in your Bankai wallet.`
+  );
   return res
     .status(StatusCodes.OK)
     .json({ msg: "Wallet recharged successfully!" });

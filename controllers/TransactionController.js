@@ -9,6 +9,10 @@ import BanksCard from "../models/BanksCardModel.js";
 import VirtualCard from "../models/VirtualCard.js";
 import User from "../models/UserModel.js";
 import { getUserCards, retreiveSingleCard } from "../utils/blockFunctions.js";
+import {
+  SendNotification,
+  SendNotificationToDevice,
+} from "../utils/notificationFunctions.js";
 
 export const performTransaction = async (req, res) => {
   const { cardNumber, cvv, amount, merchant } = req.body;
@@ -21,13 +25,24 @@ export const performTransaction = async (req, res) => {
 
   const currentDate = new Date(Date.now());
 
+  const formattedDate = new Date().toLocaleDateString("en-US", {
+    timeZone: "Asia/Karachi",
+  });
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    timeZone: "Asia/Karachi",
+  });
+
   if (user.subscription_expiry_Date < currentDate) {
+    SendNotification(
+      `Transaction failed because your subscription is expired. Please renew your subscription.`
+    );
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ msg: "transaction failed" });
   }
 
   if (user.isBlocked) {
+    SendNotification(`Transaction failed because you have been blocked.`);
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ msg: "transaction failed" });
@@ -47,6 +62,9 @@ export const performTransaction = async (req, res) => {
       transaction_virtual_card: virtualCard._id,
       isVirtualCardUsed: true,
     });
+    SendNotification(
+      `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+    );
   }
 
   const cardsArray = await getUserCards(user);
@@ -74,6 +92,9 @@ export const performTransaction = async (req, res) => {
         performedBy: card.ownedBy,
         transaction_virtual_card: null,
       });
+      SendNotification(
+        `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+      );
       break;
     }
     if (!transactionCompleted) {
@@ -95,7 +116,9 @@ export const performTransaction = async (req, res) => {
           transaction_card: card.cardID,
           transaction_virtual_card: null,
         });
-
+        SendNotification(
+          `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+        );
         break;
       }
     }
@@ -119,6 +142,9 @@ export const performTransaction = async (req, res) => {
           transaction_virtual_card: virtualCard._id,
           isVirtualCardUsed: true,
         });
+        SendNotification(
+          `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`
+        );
       } else {
         await Transaction.create({
           amount,
@@ -128,6 +154,10 @@ export const performTransaction = async (req, res) => {
           performedBy: virtualCard.ownedBy,
           transaction_virtual_card: null,
         });
+        SendNotification(
+          `Transaction failed of ${amount} due to insufficient funds at ${formattedTime}.`
+        );
+
         return res
           .status(StatusCodes.BAD_REQUEST)
           .json({ msg: "transaction failed" });
@@ -141,6 +171,7 @@ export const performTransaction = async (req, res) => {
         performedBy: virtualCard.ownedBy,
         transaction_virtual_card: null,
       });
+      SendNotification(`Transaction failed of ${amount} at ${formattedTime}.`);
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: "transaction failed" });

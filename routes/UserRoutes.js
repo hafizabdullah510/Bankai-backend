@@ -12,6 +12,7 @@ import {
   makePayment,
   setUserApplicantId,
   userPremiumSubscription,
+  updateUserDevices,
 } from "../controllers/userController.js";
 const router = express.Router();
 
@@ -37,5 +38,6 @@ router.patch(
 router.post("/setApplicantId", setUserApplicantId);
 router.post("/make_payment", makePayment);
 router.get("/account/premium-subscription", userPremiumSubscription);
+router.post("/update-devices", updateUserDevices);
 
 export default router;

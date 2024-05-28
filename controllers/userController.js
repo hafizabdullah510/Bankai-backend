@@ -10,6 +10,7 @@ import Stripe from "stripe";
 const stripe = new Stripe(
   "sk_test_51OvwcEHoalhmTGHSrNJ1nKB9ivxwSNr8dT7DNfFCL1YzwFQcbaQxSuKN8yXmx1fhRlqGBw4zm3B2A37Ud4VzIAVJ00ML05Bgug"
 );
+import { SendNotification } from "../utils/notificationFunctions.js";
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
@@ -35,7 +36,13 @@ export const getSingleUser = async (req, res) => {
 export const getCurrentUser = async (req, res) => {
   const adminUser = await User.findOne({ _id: req.user.userId });
   const user = adminUser.delPassword();
-  res.status(StatusCodes.OK).json({ user });
+  const currentDate = new Date(Date.now());
+  if (user.subscription_expiry_Date < currentDate) {
+    SendNotification(
+      `Your subscription is expired. Please renew the subscription.`
+    );
+    res.status(StatusCodes.OK).json({ user });
+  }
 };
 export const updatePassword = async (req, res) => {
   const currentUser = await User.findOne({ _id: req.user.userId });
@@ -100,5 +107,14 @@ export const userPremiumSubscription = async (req, res) => {
     Date.now() + 1000 * 60 * 60 * 24 * 30
   );
   await user.save();
+  SendNotification("Your subscription is renewed.");
   res.status(StatusCodes.OK).json({ msg: "Subscription Successful!" });
+};
+
+export const updateUserDevices = async (req, res) => {
+  const adminUser = await User.findByIdAndUpdate(req.user.userId, req.body, {
+    new: true,
+  });
+  const user = adminUser.delPassword();
+  res.status(StatusCodes.OK).json({ user });
 };

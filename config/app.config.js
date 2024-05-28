@@ -1,0 +1,6 @@
+const ONE_SIGNAL_CONFIG = {
+  APP_ID: "9a06421b-5b60-4932-ae48-e548c3c2a30d",
+  API_KEY: "NGI5NjY2YjktN2QwOC00Zjk5LThjNzItZTQxNWVlZjEwM2Ri"
+};
+
+export default ONE_SIGNAL_CONFIG
