@@ -62,12 +62,12 @@ export const forgot_password = async (req, res) => {
     throw new BAD_REQUEST_ERROR("please provide valid email");
   }
 
-  const user = User.findOne({ email });
+  const user = await User.findOne({ email });
   if (user) {
     const passwordToken = crypto.randomBytes(70).toString("hex");
 
     //send email
-    const origin = "http://localhost:5174";
+    const origin = "https://fa23se18.000webhostapp.com";
     await sendResetPasswordEmail({
       email: email,
       token: passwordToken,
@@ -78,18 +78,12 @@ export const forgot_password = async (req, res) => {
 
     const passwordTokenExpirationDate = new Date(Date.now() + tenMinutes);
 
-    await User.updateOne(
-      user._id,
-      {
-        passwordToken: hashPasswordToken(passwordToken),
-        passwordTokenExpirationDate,
-      },
-      {
-        runValidators: true,
-        new: true,
-      }
-    );
+    user.passwordToken = hashPasswordToken(passwordToken);
+    user.passwordTokenExpirationDate = passwordTokenExpirationDate;
+
+    await user.save();
   }
+
   res
     .status(StatusCodes.OK)
     .json({ msg: "please check your email to reset password" });
