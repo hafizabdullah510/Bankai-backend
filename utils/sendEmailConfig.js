@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ to, subject, html }) => {
-  let testAccount = await nodemailer.createTestAccount();
+  await nodemailer.createTestAccount();
 
   const transporter = nodemailer.createTransport({
     host: "smtp.ethereal.email",

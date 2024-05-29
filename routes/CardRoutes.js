@@ -11,11 +11,7 @@ import {
   getUserVirtualCard,
   recharge_wallet,
 } from "../controllers/CardController.js";
-import {
-  validateAddCardInput,
-  validateCardIdParam,
-} from "../middlewares/validationMiddleware.js";
-import { authorizePermission } from "../middlewares/authMiddleware.js";
+import { validateAddCardInput } from "../middlewares/validationMiddleware.js";
 
 router.get("/", getAllCards);
 router.post("/", validateAddCardInput, addCard);

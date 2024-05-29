@@ -15,8 +15,6 @@ import { SendNotification } from "./utils/notificationFunctions.js";
 import { getFormattedDateAndTime } from "./utils/dateAndTime.js";
 import { saveUserNotifications } from "./utils/saveUserNotifications.js";
 
-const app = express();
-
 //Routes
 import AuthRouter from "./routes/AuthRoutes.js";
 import UserRouter from "./routes/UserRoutes.js";
@@ -32,28 +30,18 @@ import {
   isUserBlocked,
 } from "./middlewares/authMiddleware.js";
 
+//app initialization
+const app = express();
+
+//app Middlewares
 app.use(express.json());
 app.use(cors());
-
 app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-// to pay loan of virtual cards
-// const renewRule = new schedule.RecurrenceRule();
-// rule.hour = 0;
-// rule.minute = 40;
-// rule.second = 0;
-// rule.tz = "Etc/GMT-5";
-// const renewLimitJob = schedule.scheduleJob(renewRule, renewLimit);
-// const payLoanRule = new schedule.RecurrenceRule();
-// rule.hour = 0;
-// rule.minute = 40;
-// rule.second = 50;
-// rule.tz = "Etc/GMT-5";
-// const payLoanJob = schedule.scheduleJob(payLoanRule, payLoan);
-
+//APIs
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/user", authenticationMiddleware, UserRouter);
 app.use("/api/v1/admin", authenticationMiddleware, AdminRouter);
@@ -64,6 +52,7 @@ app.use(
   authenticationMiddleware,
   UserTransactionsRouter
 );
+
 //Onfido verification
 app.post("/api/v1/onfido_verification", async (req, res) => {
   const { payload } = req.body;
@@ -104,7 +93,8 @@ app.post("/api/v1/onfido_verification", async (req, res) => {
   }
   res.status(StatusCodes.OK).json({ msg: "ok" });
 });
-//.well-known
+
+//.well-known for app binding
 app.get("/.well-known/assetlinks.json", (req, res) => {
   fs.readFile(process.cwd() + "/.well-known/assetlinks.json", (err, data) => {
     if (err) {
@@ -112,13 +102,10 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
       res.end("Internal Server Error");
       return;
     }
-
     // Parse the JSON data
     const jsonData = JSON.parse(data);
-
     // Set response headers
     res.writeHead(200, { "Content-Type": "application/json" });
-
     // Send the JSON data as response
     res.end(JSON.stringify(jsonData));
   });
@@ -128,13 +115,16 @@ app.get("/.well-known/assetlinks.json", (req, res) => {
 app.use("/renew_limit", renewLimit);
 app.use("/pay_loan", payLoan);
 
+//No Route Exists
 app.use("*", (req, res) => {
   res.status(404).json({ msg: "Routes does not exists" });
 });
+//Handles errors other than Route does not exists
 app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5200;
 
+//DB connection
 try {
   await mongoose.connect(process.env.MONGO_URL);
   app.listen(port, () => {

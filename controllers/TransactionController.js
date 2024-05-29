@@ -1,8 +1,4 @@
-import {
-  UNAUTHENTICATED_ERROR,
-  BAD_REQUEST_ERROR,
-  UNAUTHORIZED_ERROR,
-} from "../errors/CustomErrors.js";
+import { UNAUTHORIZED_ERROR } from "../errors/CustomErrors.js";
 import { StatusCodes } from "http-status-codes";
 import Transaction from "../models/Transaction.js";
 import BanksCard from "../models/BanksCardModel.js";

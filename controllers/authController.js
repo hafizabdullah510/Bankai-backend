@@ -2,16 +2,11 @@ import User from "../models/UserModel.js";
 import { StatusCodes } from "http-status-codes";
 import { createJWT, addCookiesToResponse } from "../utils/tokenUtils.js";
 import crypto from "crypto";
-import {
-  comparePassword,
-  hashPassword,
-  hashPasswordToken,
-} from "../utils/passwordUtils.js";
+import { comparePassword, hashPasswordToken } from "../utils/passwordUtils.js";
 import { sendResetPasswordEmail } from "../utils/sendResetPasswordEmail.js";
 import {
   UNAUTHENTICATED_ERROR,
   BAD_REQUEST_ERROR,
-  UNAUTHORIZED_ERROR,
 } from "../errors/CustomErrors.js";
 import { SendNotification } from "../utils/notificationFunctions.js";
 import { getFormattedDateAndTime } from "../utils/dateAndTime.js";

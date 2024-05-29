@@ -15,6 +15,7 @@ import BankaiConstants from "../models/BankaiConstants.js";
 import { SendNotification } from "../utils/notificationFunctions.js";
 import { getFormattedDateAndTime } from "../utils/dateAndTime.js";
 import { saveUserNotifications } from "../utils/saveUserNotifications.js";
+
 export const addCard = async (req, res) => {
   const {
     cardHolderName,
@@ -128,9 +129,7 @@ export const deleteCard = async (req, res) => {
   const cardContract = await getContract();
   const deleted = await cardContract.deleteCard(id);
   await deleted.wait();
-
   const cardIndex = user.cards.findIndex((card) => card.cardID === id);
-
   // Remove the card from the array
   const deletedCard = user.cards.splice(cardIndex, 1)[0];
   console.log(cardIndex, deletedCard);
@@ -140,7 +139,6 @@ export const deleteCard = async (req, res) => {
       card.priorityNumber -= 1;
     }
   }
-
   // Save the updated user document
   user.markModified("cards");
   await user.save();
@@ -164,7 +162,6 @@ export const changePriority = async (req, res) => {
 export const getAllCards = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId });
   const combinedArray = await getUserCards(user);
-
   res.status(StatusCodes.OK).json({ cards: combinedArray });
 };
 
@@ -204,7 +201,6 @@ export const freezeCard = async (req, res) => {
 export const getSingleCard = async (req, res) => {
   const { id } = req.params;
   const user = await User.findOne({ _id: req.user.userId });
-
   const card = await retreiveSingleCard(id, user);
   res.status(StatusCodes.OK).json({ card });
 };

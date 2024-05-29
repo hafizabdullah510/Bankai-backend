@@ -1,11 +1,6 @@
-import {
-  UNAUTHENTICATED_ERROR,
-  BAD_REQUEST_ERROR,
-  UNAUTHORIZED_ERROR,
-} from "../errors/CustomErrors.js";
+import { BAD_REQUEST_ERROR } from "../errors/CustomErrors.js";
 import User from "../models/UserModel.js";
 import Transaction from "../models/Transaction.js";
-import VirtualCard from "../models/VirtualCard.js";
 import { StatusCodes } from "http-status-codes";
 import BankaiConstants from "../models/BankaiConstants.js";
 
