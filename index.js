@@ -55,6 +55,7 @@ app.use(
 
 //Onfido verification
 app.post("/api/v1/onfido_verification", async (req, res) => {
+  let message = "";
   const { payload } = req.body;
   if (payload.action === "workflow_task.completed") {
     const userCnic = payload.resource?.input?.custom_data?.document_number;
