@@ -13,6 +13,10 @@ const transactionSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isWalletUsed: {
+      type: Boolean,
+      default: false,
+    },
     transactionStatus: {
       type: String,
       enum: ["success", "failed"],

@@ -64,6 +64,7 @@ export const performTransaction = async (req, res) => {
       performedBy: virtualCard.ownedBy,
       transaction_virtual_card: virtualCard._id,
       isVirtualCardUsed: true,
+      isWalletUsed: true,
     });
     message = `Transaction performed of ${amount} at ${merchant} on ${formattedDate} at ${formattedTime}`;
     await saveUserNotifications(
