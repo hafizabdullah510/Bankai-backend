@@ -232,6 +232,7 @@ export const getAllTransactions = async (req, res) => {
     {
       $match: {
         createdAt: { $gte: startDate, $lte: endDate },
+        transactionStatus: "success",
         performedBy: user._id.toString(),
       },
     },
